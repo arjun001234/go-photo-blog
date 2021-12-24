@@ -1,0 +1,17 @@
+<!Doctype html>
+<html>
+    <body>
+        {{template "header"}}
+        {{$photos := .}}
+        {{ $length := len $photos }}
+        {{ if eq $length 0 }}
+            <h1>No Photos yet</h1>
+        {{else}}
+        <h1>Welcome to photo blog</h1>
+        {{range $photos}}
+            <h1>{{.User.Name}}</h1>
+            <img src={{.Photo.Url}} height="300" width="300" />
+        {{end}}
+        {{end}}
+    </body>
+</html>

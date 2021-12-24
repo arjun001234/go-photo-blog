@@ -16,6 +16,7 @@ import (
 
 func init() {
 	config.LoadConfig()
+	config.LoadTemplates()
 	db := storage.NewMySQLDatabase()
 	ur := repo.NewUserRepository(db)
 	pr := repo.NewphotoRepository(db)
