@@ -9,11 +9,10 @@ import (
 )
 
 func NewMySQLDatabase() *sql.DB {
-	db, err := sql.Open("mysql", os.Getenv("DB_USER")+`:`+os.Getenv("DB_PASSWORD")+`@/`+os.Getenv("DB_DATABASE"))
+	db, err := sql.Open("mysql", os.Getenv("DB_USER")+`:`+os.Getenv("DB_PASSWORD")+`@/`+os.Getenv("DB_DATABASE")+`?parseTime=true`)
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
 	err = db.Ping()
 	if err != nil {
 		panic(err)

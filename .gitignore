@@ -1,3 +1,5 @@
 # env files
 .dev.env
 .prod.env
+
+public
