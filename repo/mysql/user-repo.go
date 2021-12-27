@@ -3,7 +3,6 @@ package repository
 import (
 	"clean-architecture/entity"
 	"database/sql"
-	"fmt"
 	"strconv"
 )
 
@@ -16,19 +15,21 @@ func NewUserRepository(d *sql.DB) entity.UserRepository {
 }
 
 func (ur userRepo) Save(u *entity.User) error {
-	var err error
+
 	query := "INSERT INTO PB_USERS(pb_name,pb_email,pb_password) VALUES(\"" + u.Name + "\",\"" + u.Email + "\",\"" + u.Password + "\");"
 
 	smt, err := ur.db.Prepare(query)
-	if err == nil {
-		r, err := smt.Exec()
-		if err == nil {
-			id, err := r.LastInsertId()
-			u.Id = id
-			if err != nil {
-				return err
-			}
-		}
+	if err != nil {
+		return err
+	}
+	r, err := smt.Exec()
+	if err != nil {
+		return err
+	}
+	id, err := r.LastInsertId()
+	u.Id = id
+	if err != nil {
+		return err
 	}
 	return err
 }
@@ -73,20 +74,24 @@ func (ur userRepo) GetAll() (*[]entity.User, error) {
 		us = append(us, u)
 	}
 	defer rs.Close()
-	fmt.Println(us)
 	return &us, err
 }
 
-func (ur userRepo) GetByEmail(u *entity.User) error {
+func (ur userRepo) GetByEmail(e string) (*entity.User, error) {
 
-	query := `SELECT * FROM PB_USERS WHERE pb_email="` + u.Email + `";`
+	u := entity.User{}
+
+	query := `SELECT * FROM PB_USERS WHERE pb_email="` + e + `";`
 
 	rs, err := ur.db.Query(query)
+	if err != nil {
+		return &u, err
+	}
 
 	for rs.Next() {
 		err = rs.Scan(&u.Id, &u.Name, &u.Email, &u.Password, &u.CreatedAt, &u.UpdatedAt)
 		break
 	}
 
-	return err
+	return &u, err
 }

@@ -23,27 +23,22 @@ func NewMiddleware(s entity.UserService) Middleware {
 func (ap appmiddleware) Auth() Adapter {
 	return func(h httprouter.Handle) httprouter.Handle {
 		return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-			u := entity.User{}
 
 			ck, err := r.Cookie("session")
 
 			if err != nil {
-				http.Error(w, "User not logged in", http.StatusNotFound)
+				http.Error(w, "user not logged in", http.StatusNotFound)
 				return
 			}
 
-			s := entity.Session{
-				Session: ck.Value,
-				User:    &u,
-			}
+			s, err := ap.userService.IsUserLoggedIn(ck.Value)
 
-			err = ap.userService.IsUserLoggedIn(&s)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusNotFound)
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), USER, u)
+			ctx := context.WithValue(r.Context(), USER, s.User)
 
 			h(w, r.WithContext(ctx), p)
 		}

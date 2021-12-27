@@ -4,6 +4,7 @@ import (
 	"clean-architecture/entity"
 	"crypto/hmac"
 	"crypto/sha256"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -26,25 +27,35 @@ func (pservice) HashCode(s string) string {
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
-func (ps pservice) CreatePhoto(r *http.Request, p *entity.Photo) error {
-	return ps.HandleFiles(r, p)
+func (ps pservice) CreatePhoto(r *http.Request, u *entity.User) (*[]entity.Photo, error) {
+	var phs []entity.Photo
+	urls, err := ps.UploadFiles(r)
+	for _, url := range urls {
+		p := entity.Photo{
+			Url:  url,
+			User: &entity.User{},
+		}
+		ps.photoRepo.Save(&p)
+		phs = append(phs, p)
+	}
+	return &phs, err
 }
 
-func (ps pservice) HandleFiles(r *http.Request, p *entity.Photo) error {
+func (ps pservice) UploadFiles(r *http.Request) ([]string, error) {
 	var err error
-	//    var fileUrl = "http://localhost:8080/public/"
+	var urls []string
 	for _, headers := range r.MultipartForm.File {
 		// headers is of type array index,value
 		for _, hdr := range headers {
 			file, err := hdr.Open()
 			if err != nil {
-				return err
+				return urls, err
 			}
 			defer file.Close()
 
 			dir, err := os.Getwd()
 			if err != nil {
-				return err
+				return urls, err
 			}
 
 			fa := strings.Split(hdr.Filename, ".")
@@ -53,30 +64,59 @@ func (ps pservice) HandleFiles(r *http.Request, p *entity.Photo) error {
 
 			nfile, err := os.Create(filepath.Join(dir, "public", nf))
 			if err != nil {
-				fmt.Println(err)
-				return err
+				return urls, err
 			}
 
 			_, err = io.Copy(nfile, file)
 			if err != nil {
-				fmt.Println(err)
-				return err
+				return urls, err
 			}
 
-			p.Url = os.Getenv("IMG_URL") + nf
+			url := os.Getenv("IMG_URL") + nf
 
-			err = ps.photoRepo.Save(p)
+			urls = append(urls, url)
+
 			if err != nil {
-				fmt.Println(err)
-				return err
+				return urls, err
 			}
 		}
 	}
+	return urls, err
+}
+
+func (pservice) RemoveFiles(url string) error {
+	if len(url) == 0 {
+		return errors.New("internal server error")
+	}
+	ar := strings.Split(url, "/")
+	dir, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	err = os.Remove(filepath.Join(dir, "public", ar[len(ar)-1]))
 	return err
 }
 
-func (pservice) DeletePhoto(id int64) {}
+func (ps pservice) DeletePhoto(id int64, uId int64) (*entity.Photo, error) {
+	p, err := ps.FindPhoto(id)
+	if err != nil {
+		return p, err
+	}
+	if uId != p.User.Id {
+		return p, errors.New("access denied")
+	}
+	err = ps.RemoveFiles(p.Url)
+	if err != nil {
+		return p, err
+	}
+	err = ps.photoRepo.Delete(id)
+	return p, err
+}
 
-func (pservice) FindPhoto(id int64) {}
+func (ps pservice) FindPhoto(id int64) (*entity.Photo, error) {
+	return ps.photoRepo.GetOne(id)
+}
 
-func (pservice) FindPhotos() {}
+func (ps pservice) FindPhotos() (*[]entity.Photo, error) {
+	return ps.photoRepo.GetAll()
+}

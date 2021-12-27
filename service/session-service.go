@@ -14,18 +14,19 @@ func NewSessionService(r entity.SessionRepository) entity.SessionService {
 	return &sservice{r}
 }
 
-func (sr sservice) SetSession(s *entity.Session) (*entity.Session, error) {
-	id := uuid.New().String()
-	s.Session = id
-	err := sr.sessionRepo.Save(s)
-	return s, err
+func (sr sservice) SetSession(s *entity.Session) error {
+	s.Session = sr.GenerateSession()
+	return sr.sessionRepo.Save(s)
 }
 
-func (sr sservice) GetUser(s *entity.Session) error {
-	err := sr.sessionRepo.GetOne(s)
-	return err
+func (sr sservice) GetUser(s string) (*entity.Session, error) {
+	return sr.sessionRepo.GetOne(s)
 }
 
 func (sr sservice) RemoveSession(s *entity.Session) error {
-	return sr.sessionRepo.Remove(s)
+	return sr.sessionRepo.Delete(s.Session)
+}
+
+func (sr sservice) GenerateSession() string {
+	return uuid.New().String()
 }

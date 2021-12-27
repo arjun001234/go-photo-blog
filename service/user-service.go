@@ -22,23 +22,27 @@ func (uservice) ValidateUser(u *entity.User) error {
 	return err
 }
 
-func (us uservice) IsUserLoggedIn(s *entity.Session) error {
-	err := us.sessionService.GetUser(s)
-	return err
+func (us uservice) IsUserLoggedIn(s string) (*entity.Session, error) {
+	return us.sessionService.GetUser(s)
 }
 
 func (us uservice) ValidateCredential(u *entity.User) (*entity.Session, error) {
-	var err error
-	s := entity.Session{}
+	s := &entity.Session{
+		User: u,
+	}
 	enteredPassword := u.Password
-	err = us.userRepo.GetByEmail(u)
+	ur, err := us.userRepo.GetByEmail(u.Email)
+	u = ur
 	if err != nil {
-		return nil, err
+		return s, err
 	}
 	err = us.ComparePassword(enteredPassword, u.Password)
+	if err != nil {
+		return s, err
+	}
 	s.User = u
-	us.sessionService.SetSession(&s)
-	return &s, err
+	us.sessionService.SetSession(s)
+	return s, err
 }
 
 func (uservice) HashPassword(s string) (string, error) {
@@ -52,18 +56,26 @@ func (uservice) ComparePassword(p string, hp string) error {
 }
 
 func (us uservice) CreateUser(u *entity.User) (*entity.Session, error) {
-	s := entity.Session{}
+	s := &entity.Session{}
 	var err error
 	err = us.ValidateUser(u)
-	if err == nil {
-		u.Password, err = us.HashPassword(u.Password)
-		if err == nil {
-			err = us.userRepo.Save(u)
-			s.User = u
-			us.sessionService.SetSession(&s)
-		}
+	if err != nil {
+		return s, err
 	}
-	return &s, err
+	u.Password, err = us.HashPassword(u.Password)
+	if err != nil {
+		return s, err
+	}
+	err = us.userRepo.Save(u)
+	if err != nil {
+		return s, err
+	}
+	s.User = u
+	err = us.sessionService.SetSession(s)
+	if err != nil {
+		return s, err
+	}
+	return s, err
 }
 
 func (us uservice) Logout(s *entity.Session) error {

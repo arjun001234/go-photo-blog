@@ -5,6 +5,7 @@ import (
 	"clean-architecture/entity"
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -27,11 +28,35 @@ func (pc photoController) NewPhoto(w http.ResponseWriter, r *http.Request, _ htt
 		return
 	}
 
-	p := entity.Photo{
-		User: &u,
+	ps, err := pc.photoService.CreatePhoto(r, &u)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	err := pc.photoService.CreatePhoto(r, &p)
+	result, err := json.Marshal(ps)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(result)
+}
+
+func (pc photoController) GetPhoto(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
+
+	pId := pr.ByName("id")
+
+	if len(pId) == 0 {
+		http.Error(w, "Photo id not provided", http.StatusBadRequest)
+		return
+	}
+
+	toInt, _ := strconv.Atoi(pId)
+
+	p, err := pc.photoService.FindPhoto(int64(toInt))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -43,21 +68,54 @@ func (pc photoController) NewPhoto(w http.ResponseWriter, r *http.Request, _ htt
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(result)
-	w.WriteHeader(201)
 }
 
-func (photoController) GetPhoto(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte("Existing Photo"))
-}
+func (pc photoController) DeletePhoto(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
 
-func (photoController) DeletePhoto(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	pId := pr.ByName("id")
+
+	if len(pId) == 0 {
+		http.Error(w, "Photo id not provided", http.StatusBadRequest)
+	}
+
+	u := r.Context().Value(md.USER).(entity.User)
+
+	toInt, _ := strconv.Atoi(pId)
+
+	p, err := pc.photoService.DeletePhoto(int64(toInt), u.Id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	result, err := json.Marshal(p)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte("Delete Photo"))
+	w.Write(result)
 }
-func (photoController) GetPhotos(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (pc photoController) GetPhotos(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+
+	ps, err := pc.photoService.FindPhotos()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	result, err := json.Marshal(ps)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte("Existing Photos"))
+	w.Write(result)
 }

@@ -4,6 +4,7 @@ import (
 	md "clean-architecture/controller/middleware"
 	"clean-architecture/entity"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -31,7 +32,7 @@ func (uc userController) GetUsers(w http.ResponseWriter, r *http.Request, _ http
 		return
 	}
 
-	w.WriteHeader(200)
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(result)
 }
@@ -46,7 +47,7 @@ func (uc userController) GetUser(w http.ResponseWriter, r *http.Request, _ httpr
 		return
 	}
 
-	w.WriteHeader(200)
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(result)
 }
@@ -79,7 +80,7 @@ func (uc userController) NewUser(w http.ResponseWriter, r *http.Request, _ httpr
 		HttpOnly: true,
 	})
 
-	w.WriteHeader(201)
+	w.WriteHeader(http.StatusAccepted)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(result)
 }
@@ -106,13 +107,15 @@ func (uc userController) UserLogin(w http.ResponseWriter, r *http.Request, _ htt
 		return
 	}
 
+	fmt.Println(s)
+
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session",
 		Value:    s.Session,
 		HttpOnly: true,
 	})
 
-	w.WriteHeader(200)
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(result)
 }
@@ -133,7 +136,7 @@ func (uc userController) UserLogout(w http.ResponseWriter, r *http.Request, _ ht
 		return
 	}
 
-	w.WriteHeader(200)
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(result)
 }
@@ -154,8 +157,8 @@ func (uc userController) RemoveUser(w http.ResponseWriter, r *http.Request, _ ht
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
 	w.Write(result)
 }
 
@@ -181,7 +184,7 @@ func (uc userController) UpdateUser(w http.ResponseWriter, r *http.Request, _ ht
 		return
 	}
 
-	w.WriteHeader(200)
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(result)
 }

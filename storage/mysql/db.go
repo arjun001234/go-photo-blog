@@ -20,3 +20,16 @@ func NewMySQLDatabase() *sql.DB {
 	fmt.Println("Connected To Database")
 	return db
 }
+
+func NewMySQLTestDatabase() *sql.DB {
+	db, err := sql.Open("mysql", `root:Terminator7541@/TEST_GO_PHOTO_BLOG?parseTime=true`)
+	if err != nil {
+		panic(err)
+	}
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Connected To Database")
+	return db
+}
