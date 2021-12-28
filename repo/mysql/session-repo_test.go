@@ -36,14 +36,14 @@ func TestSessionRepository(t *testing.T) {
 	tr.TestDelete(t, s)
 }
 
-func (tr sessionRepoTest) TestSave(t *testing.T, s *entity.Session) {
+func (tr *sessionRepoTest) TestSave(t *testing.T, s *entity.Session) {
 	if err := tr.sr.Save(s); err != nil {
 		t.Errorf("Error: %v", err.Error())
 	}
 	fmt.Println("New Session Saved")
 }
 
-func (tr sessionRepoTest) TestGetOne(t *testing.T, s *entity.Session) {
+func (tr *sessionRepoTest) TestGetOne(t *testing.T, s *entity.Session) {
 	ss, err := tr.sr.GetOne(s.Session)
 	if err != nil {
 		t.Errorf("Error: %v", err.Error())
@@ -53,7 +53,7 @@ func (tr sessionRepoTest) TestGetOne(t *testing.T, s *entity.Session) {
 	}
 }
 
-func (tr sessionRepoTest) TestDelete(t *testing.T, s *entity.Session) {
+func (tr *sessionRepoTest) TestDelete(t *testing.T, s *entity.Session) {
 	if err := tr.sr.Delete(s.Session); err != nil {
 		t.Errorf("Error: %v", err.Error())
 	}

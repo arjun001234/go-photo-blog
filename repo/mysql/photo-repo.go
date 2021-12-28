@@ -15,7 +15,7 @@ func NewPhotoRepository(d *sql.DB) entity.PhotoRepository {
 	return &photoRepo{d}
 }
 
-func (pr photoRepo) Save(p *entity.Photo) error {
+func (pr *photoRepo) Save(p *entity.Photo) error {
 
 	id := strconv.Itoa(int(p.User.Id))
 
@@ -40,7 +40,7 @@ func (pr photoRepo) Save(p *entity.Photo) error {
 
 	return err
 }
-func (pr photoRepo) Delete(id int64) error {
+func (pr *photoRepo) Delete(id int64) error {
 	pId := strconv.Itoa(int(id))
 	query := `DELETE FROM PB_PHOTOS WHERE id=` + pId + `;`
 	smt, err := pr.db.Prepare(query)
@@ -51,7 +51,7 @@ func (pr photoRepo) Delete(id int64) error {
 	return err
 }
 
-func (pr photoRepo) GetOne(id int64) (*entity.Photo, error) {
+func (pr *photoRepo) GetOne(id int64) (*entity.Photo, error) {
 	pId := strconv.Itoa(int(id))
 	p := entity.Photo{
 		User: &entity.User{},
@@ -63,7 +63,7 @@ func (pr photoRepo) GetOne(id int64) (*entity.Photo, error) {
 	}
 	return &p, err
 }
-func (pr photoRepo) GetAll() (*[]entity.Photo, error) {
+func (pr *photoRepo) GetAll() (*[]entity.Photo, error) {
 	var ps []entity.Photo
 	query := `SELECT * FROM PB_PHOTOS JOIN PB_USERS ON PB_PHOTOS.pb_user_id = PB_USERS.id;`
 	r, err := pr.db.Query(query)

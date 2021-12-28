@@ -41,7 +41,7 @@ func TestUserService(t *testing.T) {
 	ts.TestDeleteUser(t, u)
 }
 
-func (ts userTestService) TestCreateUser(t *testing.T, u *entity.User) {
+func (ts *userTestService) TestCreateUser(t *testing.T, u *entity.User) {
 	_, err := ts.us.CreateUser(u)
 	if err != nil {
 		t.Errorf("Error: %v", err.Error())
@@ -49,7 +49,7 @@ func (ts userTestService) TestCreateUser(t *testing.T, u *entity.User) {
 	fmt.Println("Service: User Added")
 }
 
-func (ts userTestService) TestFindUser(t *testing.T, u *entity.User) {
+func (ts *userTestService) TestFindUser(t *testing.T, u *entity.User) {
 	su, err := ts.us.FindUser(u.Id)
 	if err != nil {
 		t.Errorf("Error: %v", err.Error())
@@ -59,7 +59,7 @@ func (ts userTestService) TestFindUser(t *testing.T, u *entity.User) {
 	}
 }
 
-func (ts userTestService) TestFindUsers(t *testing.T, u *entity.User) {
+func (ts *userTestService) TestFindUsers(t *testing.T, u *entity.User) {
 	mu, err := ts.us.FindUsers()
 	if err != nil {
 		t.Errorf("Error: %v", err.Error())
@@ -78,7 +78,7 @@ func (ts userTestService) TestFindUsers(t *testing.T, u *entity.User) {
 	}
 }
 
-func (ts userTestService) TestUpdateUser(t *testing.T, uu *entity.User, u *entity.User) {
+func (ts *userTestService) TestUpdateUser(t *testing.T, uu *entity.User, u *entity.User) {
 	uu.Name = "Erling Haaland"
 	err := ts.us.UpdateUser(uu)
 	if err != nil {
@@ -93,20 +93,20 @@ func (ts userTestService) TestUpdateUser(t *testing.T, uu *entity.User, u *entit
 	}
 }
 
-func (ts userTestService) TestDeleteUser(t *testing.T, u *entity.User) {
+func (ts *userTestService) TestDeleteUser(t *testing.T, u *entity.User) {
 	if err := ts.us.DeleteUser(u.Id); err != nil {
 		t.Errorf("Error: %v", err.Error())
 	}
 	fmt.Println("Service: User Deleted")
 }
 
-func (ts userTestService) TestValidateUser(t *testing.T, u *entity.User) {
+func (ts *userTestService) TestValidateUser(t *testing.T, u *entity.User) {
 	if err := ts.us.ValidateUser(u); err != nil {
 		t.Errorf("Error: %v", err.Error())
 	}
 }
 
-func (ts userTestService) TestHashAndComparePassword(t *testing.T, u *entity.User) {
+func (ts *userTestService) TestHashAndComparePassword(t *testing.T, u *entity.User) {
 	hp, err := ts.us.HashPassword(u.Password)
 	if err != nil {
 		t.Errorf("Error: %v", err.Error())
@@ -117,7 +117,7 @@ func (ts userTestService) TestHashAndComparePassword(t *testing.T, u *entity.Use
 	}
 }
 
-func (ts userTestService) TestValidateCredential(t *testing.T, u *entity.User) {
+func (ts *userTestService) TestValidateCredential(t *testing.T, u *entity.User) {
 	s, err := ts.us.ValidateCredential(u)
 	if err != nil {
 		t.Errorf("Error: %v", err.Error())

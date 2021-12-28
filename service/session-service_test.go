@@ -36,14 +36,14 @@ func TestSessionService(t *testing.T) {
 	ts.TestRemoveSession(t, s)
 }
 
-func (ts sessionTestService) TestSetSession(t *testing.T, s *entity.Session) {
+func (ts *sessionTestService) TestSetSession(t *testing.T, s *entity.Session) {
 	if err := ts.ss.SetSession(s); err != nil {
 		t.Errorf("Error: %v", err.Error())
 	}
 	fmt.Println("Service: Session Added")
 }
 
-func (ts sessionTestService) TestGetSession(t *testing.T, s *entity.Session) {
+func (ts *sessionTestService) TestGetSession(t *testing.T, s *entity.Session) {
 	ns, err := ts.ss.GetUser(s.Session)
 	if err != nil {
 		t.Errorf("Error: %v", err.Error())
@@ -53,7 +53,7 @@ func (ts sessionTestService) TestGetSession(t *testing.T, s *entity.Session) {
 	}
 }
 
-func (ts sessionTestService) TestRemoveSession(t *testing.T, s *entity.Session) {
+func (ts *sessionTestService) TestRemoveSession(t *testing.T, s *entity.Session) {
 	if err := ts.ss.RemoveSession(s); err != nil {
 		t.Errorf("Error: %v", err.Error())
 	}

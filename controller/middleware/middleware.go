@@ -20,7 +20,7 @@ func NewMiddleware(s entity.UserService) Middleware {
 	return &appmiddleware{s}
 }
 
-func (ap appmiddleware) Auth() Adapter {
+func (ap *appmiddleware) Auth() Adapter {
 	return func(h httprouter.Handle) httprouter.Handle {
 		return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 

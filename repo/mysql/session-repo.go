@@ -14,7 +14,7 @@ func NewSessionRepository(d *sql.DB) entity.SessionRepository {
 	return &sessionRepo{d}
 }
 
-func (sr sessionRepo) Save(s *entity.Session) error {
+func (sr *sessionRepo) Save(s *entity.Session) error {
 
 	id := strconv.Itoa(int(s.User.Id))
 	query := `INSERT INTO PB_SESSIONS(pb_session,pb_user_id) VALUES("` + s.Session + `",` + id + `);`
@@ -30,7 +30,7 @@ func (sr sessionRepo) Save(s *entity.Session) error {
 	}
 	return err
 }
-func (sr sessionRepo) Delete(s string) error {
+func (sr *sessionRepo) Delete(s string) error {
 	var err error
 	query := `DELETE FROM PB_SESSIONS WHERE pb_session="` + s + `";`
 	smt, err := sr.db.Prepare(query)
@@ -40,7 +40,7 @@ func (sr sessionRepo) Delete(s string) error {
 	_, err = smt.Exec()
 	return err
 }
-func (sr sessionRepo) GetOne(ses string) (*entity.Session, error) {
+func (sr *sessionRepo) GetOne(ses string) (*entity.Session, error) {
 
 	s := entity.Session{
 		Session: ses,

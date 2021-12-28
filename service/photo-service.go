@@ -21,15 +21,18 @@ func NewPhotoService(r entity.PhotoRepository) entity.PhotoService {
 	return &pservice{r}
 }
 
-func (pservice) HashCode(s string) string {
+func (*pservice) HashCode(s string) string {
 	h := hmac.New(sha256.New, []byte("arjun"))
 	h.Write([]byte(s))
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
-func (ps pservice) CreatePhoto(r *http.Request, u *entity.User) (*[]entity.Photo, error) {
+func (ps *pservice) CreatePhoto(r *http.Request, u *entity.User) (*[]entity.Photo, error) {
 	var phs []entity.Photo
 	urls, err := ps.UploadFiles(r)
+	if err != nil {
+		return &phs, err
+	}
 	for _, url := range urls {
 		p := entity.Photo{
 			Url:  url,
@@ -41,7 +44,7 @@ func (ps pservice) CreatePhoto(r *http.Request, u *entity.User) (*[]entity.Photo
 	return &phs, err
 }
 
-func (ps pservice) UploadFiles(r *http.Request) ([]string, error) {
+func (ps *pservice) UploadFiles(r *http.Request) ([]string, error) {
 	var err error
 	var urls []string
 	for _, headers := range r.MultipartForm.File {
@@ -84,7 +87,7 @@ func (ps pservice) UploadFiles(r *http.Request) ([]string, error) {
 	return urls, err
 }
 
-func (pservice) RemoveFiles(url string) error {
+func (*pservice) RemoveFiles(url string) error {
 	if len(url) == 0 {
 		return errors.New("internal server error")
 	}
@@ -97,7 +100,7 @@ func (pservice) RemoveFiles(url string) error {
 	return err
 }
 
-func (ps pservice) DeletePhoto(id int64, uId int64) (*entity.Photo, error) {
+func (ps *pservice) DeletePhoto(id int64, uId int64) (*entity.Photo, error) {
 	p, err := ps.FindPhoto(id)
 	if err != nil {
 		return p, err
@@ -113,10 +116,10 @@ func (ps pservice) DeletePhoto(id int64, uId int64) (*entity.Photo, error) {
 	return p, err
 }
 
-func (ps pservice) FindPhoto(id int64) (*entity.Photo, error) {
+func (ps *pservice) FindPhoto(id int64) (*entity.Photo, error) {
 	return ps.photoRepo.GetOne(id)
 }
 
-func (ps pservice) FindPhotos() (*[]entity.Photo, error) {
+func (ps *pservice) FindPhotos() (*[]entity.Photo, error) {
 	return ps.photoRepo.GetAll()
 }

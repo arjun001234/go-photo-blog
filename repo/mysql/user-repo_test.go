@@ -34,14 +34,14 @@ func TestUserRepository(t *testing.T) {
 	tr.TestDelete(t, u)
 }
 
-func (tr userRepoTest) TestSave(t *testing.T, u *entity.User) {
+func (tr *userRepoTest) TestSave(t *testing.T, u *entity.User) {
 	if err := tr.ur.Save(u); err != nil {
 		t.Errorf("Error: %v", err.Error())
 	}
 	fmt.Println("New User Saved")
 }
 
-func (tr userRepoTest) TestGetOne(t *testing.T, u *entity.User) {
+func (tr *userRepoTest) TestGetOne(t *testing.T, u *entity.User) {
 	su, err := tr.ur.GetOne(u.Id)
 	if err != nil {
 		t.Errorf("Error: %v", err.Error())
@@ -51,7 +51,7 @@ func (tr userRepoTest) TestGetOne(t *testing.T, u *entity.User) {
 	}
 }
 
-func (tr userRepoTest) TestGetAll(t *testing.T, u *entity.User) {
+func (tr *userRepoTest) TestGetAll(t *testing.T, u *entity.User) {
 	mu, err := tr.ur.GetAll()
 	if err != nil {
 		t.Errorf("Error: %v", err.Error())
@@ -70,7 +70,7 @@ func (tr userRepoTest) TestGetAll(t *testing.T, u *entity.User) {
 	}
 }
 
-func (tr userRepoTest) TestGetByEmail(t *testing.T, u *entity.User) {
+func (tr *userRepoTest) TestGetByEmail(t *testing.T, u *entity.User) {
 	cu, err := tr.ur.GetByEmail(u.Email)
 	if err != nil {
 		t.Errorf("Error: %v", err.Error())
@@ -80,7 +80,7 @@ func (tr userRepoTest) TestGetByEmail(t *testing.T, u *entity.User) {
 	}
 }
 
-func (tr userRepoTest) TestUpdate(t *testing.T, uu *entity.User, u *entity.User) {
+func (tr *userRepoTest) TestUpdate(t *testing.T, uu *entity.User, u *entity.User) {
 	uu.Name = "Taylor Swift"
 	err := tr.ur.Update(uu)
 	if err != nil {
@@ -95,7 +95,7 @@ func (tr userRepoTest) TestUpdate(t *testing.T, uu *entity.User, u *entity.User)
 	}
 }
 
-func (tr userRepoTest) TestDelete(t *testing.T, u *entity.User) {
+func (tr *userRepoTest) TestDelete(t *testing.T, u *entity.User) {
 	err := tr.ur.Delete(u.Id)
 	if err != nil {
 		t.Errorf("Error: %v", err.Error())

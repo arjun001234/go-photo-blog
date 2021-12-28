@@ -18,7 +18,7 @@ func NewUserController(s entity.UserService) *userController {
 	return &userController{s}
 }
 
-func (uc userController) GetUsers(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (uc *userController) GetUsers(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	us, err := uc.userService.FindUsers()
 	if err != nil {
@@ -37,7 +37,7 @@ func (uc userController) GetUsers(w http.ResponseWriter, r *http.Request, _ http
 	w.Write(result)
 }
 
-func (uc userController) GetUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (uc *userController) GetUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	u := r.Context().Value(md.USER).(entity.User)
 
@@ -52,7 +52,7 @@ func (uc userController) GetUser(w http.ResponseWriter, r *http.Request, _ httpr
 	w.Write(result)
 }
 
-func (uc userController) NewUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (uc *userController) NewUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	var u entity.User
 
@@ -85,7 +85,7 @@ func (uc userController) NewUser(w http.ResponseWriter, r *http.Request, _ httpr
 	w.Write(result)
 }
 
-func (uc userController) UserLogin(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (uc *userController) UserLogin(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	var u entity.User
 
@@ -120,7 +120,7 @@ func (uc userController) UserLogin(w http.ResponseWriter, r *http.Request, _ htt
 	w.Write(result)
 }
 
-func (uc userController) UserLogout(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (uc *userController) UserLogout(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	u := r.Context().Value(md.USER).(entity.User)
 
@@ -141,7 +141,7 @@ func (uc userController) UserLogout(w http.ResponseWriter, r *http.Request, _ ht
 	w.Write(result)
 }
 
-func (uc userController) RemoveUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (uc *userController) RemoveUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	u := r.Context().Value(md.USER).(entity.User)
 
@@ -162,7 +162,7 @@ func (uc userController) RemoveUser(w http.ResponseWriter, r *http.Request, _ ht
 	w.Write(result)
 }
 
-func (uc userController) UpdateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (uc *userController) UpdateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	u := r.Context().Value(md.USER).(entity.User)
 

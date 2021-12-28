@@ -35,14 +35,14 @@ func TestPhotoRepository(t *testing.T) {
 	tr.TestDelete(t, p)
 }
 
-func (tr photoRepoTest) TestSave(t *testing.T, p *entity.Photo) {
+func (tr *photoRepoTest) TestSave(t *testing.T, p *entity.Photo) {
 	if err := tr.pr.Save(p); err != nil {
 		t.Errorf("Error: %v", err.Error())
 	}
 	fmt.Println("New Photo Saved")
 }
 
-func (tr photoRepoTest) TestGetOne(t *testing.T, p *entity.Photo) {
+func (tr *photoRepoTest) TestGetOne(t *testing.T, p *entity.Photo) {
 	sp, err := tr.pr.GetOne(p.Id)
 	if err != nil {
 		t.Errorf("Error: %v", err.Error())
@@ -52,7 +52,7 @@ func (tr photoRepoTest) TestGetOne(t *testing.T, p *entity.Photo) {
 	}
 }
 
-func (tr photoRepoTest) TestGetAll(t *testing.T, p *entity.Photo) {
+func (tr *photoRepoTest) TestGetAll(t *testing.T, p *entity.Photo) {
 	mp, err := tr.pr.GetAll()
 	if err != nil {
 		t.Errorf("Error: %v", err.Error())
@@ -71,7 +71,7 @@ func (tr photoRepoTest) TestGetAll(t *testing.T, p *entity.Photo) {
 	}
 }
 
-func (tr photoRepoTest) TestDelete(t *testing.T, p *entity.Photo) {
+func (tr *photoRepoTest) TestDelete(t *testing.T, p *entity.Photo) {
 	if err := tr.pr.Delete(p.Id); err != nil {
 		t.Errorf("Error: %v", err.Error())
 	}

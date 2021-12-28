@@ -18,7 +18,7 @@ func NewPhotoController(s entity.PhotoService) *photoController {
 	return &photoController{s}
 }
 
-func (pc photoController) NewPhoto(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (pc *photoController) NewPhoto(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	u := r.Context().Value(md.USER).(entity.User)
 
@@ -45,7 +45,7 @@ func (pc photoController) NewPhoto(w http.ResponseWriter, r *http.Request, _ htt
 	w.Write(result)
 }
 
-func (pc photoController) GetPhoto(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
+func (pc *photoController) GetPhoto(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
 
 	pId := pr.ByName("id")
 
@@ -73,7 +73,7 @@ func (pc photoController) GetPhoto(w http.ResponseWriter, r *http.Request, pr ht
 	w.Write(result)
 }
 
-func (pc photoController) DeletePhoto(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
+func (pc *photoController) DeletePhoto(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
 
 	pId := pr.ByName("id")
 
@@ -101,7 +101,7 @@ func (pc photoController) DeletePhoto(w http.ResponseWriter, r *http.Request, pr
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(result)
 }
-func (pc photoController) GetPhotos(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (pc *photoController) GetPhotos(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	ps, err := pc.photoService.FindPhotos()
 	if err != nil {
